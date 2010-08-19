@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>katanoo test</title>
+  </head>
+  <body>
+
+		<form action="katanoo_submit" method="get" accept-charset="utf-8">
+			<input type="text" name="some_name" value="" id="some_name">
+			<input type="text" name="some_name" value="" id="some_name">
+			<input type="checkbox" name="some_name" value="" id="some_name">
+			<input type="radio" name="some_name" value="" id="some_name">
+			<p><input type="submit" value="Continue &rarr;"></p>
+		</form>
+
+
+
+
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/katanoo.js" type="text/javascript" charset="utf-8"></script>    
+<script type="text/javascript" charset="utf-8">
+	$(function(){
+		$('*').click(function(e){
+			console.log('hey from'+ $('*').index(this));
+		});
+	})
+</script>
+  </body>
+</html>
