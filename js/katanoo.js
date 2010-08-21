@@ -60,7 +60,7 @@ jQuery(function() {
 			'name': 'click',
 			'short': 'cl',
 			'play'		: function(ev){
-//				//console.log(ev[2]);
+//				////console.log(ev[2]);
 				if(ev[2]){
 					lib(ev[2]).trigger('click');
 				}
@@ -70,7 +70,7 @@ jQuery(function() {
 				}, 250);
 			},
 			'write': function(e) {
-//				//console.log(self.getTarget(e));
+//				////console.log(self.getTarget(e));
 				return 'cl ' + 	self.getTarget(e);
 			}
 		},
@@ -89,7 +89,7 @@ jQuery(function() {
 			'name': 'mouseout',
 			'short': 'mu',
 			'play': function(ev){
-				console.log(ev[1])
+				//console.log(ev[1])
 				lib(ev[2]).trigger('mouseout');
 			},
 			'write': function(e){
@@ -101,7 +101,7 @@ jQuery(function() {
 			'name': 'keydown',
 			'short': 'kd',
 			'play'		: function(ev){
-				console.info(ev);
+				//console.info(ev);
 				var t = ev.slice(6).join(' ');				
 				lib(ev[5]).val(t);
 			},
@@ -118,7 +118,7 @@ jQuery(function() {
 				win.resizeTo(parseFloat(ev[2]),parseFloat(ev[3]));
 			},
 			'write': function(e) {
-//				//console.log(self.getScreenSize());
+//				////console.log(self.getScreenSize());
 				return 'rs ' + self.getScreenSize()
 			}
 		},
@@ -136,7 +136,7 @@ jQuery(function() {
 			'name': 'focusout',
 			'short': 'bl',
 			'play'		: function(ev){
-				console.log(ev)
+				//console.log(ev)
 				var t = ev.slice(4).join(' ');				
 				lib(ev[3]).val(t);
 			},
@@ -148,7 +148,7 @@ jQuery(function() {
 			'name'	: 'focusin',
 			'short'	: 'fo',
 			'play'		: function(ev){
-				console.log(ev)
+				//console.log(ev)
 				var t = ev.slice(4).join(' ');				
 				lib(ev[3]).val(t);
 			},
@@ -295,7 +295,7 @@ jQuery(function() {
 				data: sendData,
 				url: self.postURL
 			}); */
-//			//console.log(JSON.parse(sendData), sendData);
+//			////console.log(JSON.parse(sendData), sendData);
 //			self.data.events = [];
 			self.eventsStorage.push(self.data.events);
 		};
@@ -306,7 +306,7 @@ jQuery(function() {
 			self.setTimer();
 		};
 		self.play = function(){
-			//console.time('playing is delayed')
+			////console.time('playing is delayed')
 			win.scroll(0,0);
 			// REsetting inputs
 			self.inputs.each(function(){
@@ -331,8 +331,8 @@ jQuery(function() {
 					}
 				}, parseFloat(ev[0]));
 			});			
-//			//console.timeEnd('playing is delayed')
-//			//console.log('starting to play '+ self.data.events.length + ' events')
+//			////console.timeEnd('playing is delayed')
+//			////console.log('starting to play '+ self.data.events.length + ' events')
 		};
 		self.data = {
 			id: self.uniqueid,
