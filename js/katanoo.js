@@ -14,7 +14,7 @@ jQuery(function() {
 				self.interval = 5000;
 				self.uniqueid = 'uniqueid';
 
-
+		self.values = {};
 		self.defaults = lib.extend({
 			controls: true
 		}, options);
@@ -60,9 +60,9 @@ jQuery(function() {
 			'name': 'click',
 			'short': 'cl',
 			'play'		: function(ev){
-				console.log(ev[2]);
-				if(ev[3]){
-					lib(ev[3]).trigger('click');
+//				//console.log(ev[2]);
+				if(ev[2]){
+					lib(ev[2]).trigger('click');
 				}
 				self.mouse.css({width: '20px', height: '20px', margin: '-10px 0 0 -10px'});
 				setTimeout(function(){
@@ -70,16 +70,40 @@ jQuery(function() {
 				}, 250);
 			},
 			'write': function(e) {
-				console.log(self.getTarget(e));
+//				//console.log(self.getTarget(e));
 				return 'cl ' + 	self.getTarget(e);
 			}
 		},
 		{
-			'name': 'keyup',
+			'name': 'mouseover',
+			'short': 'mo',
+			'play': function(ev){
+					lib(ev[2]).trigger('mouseover');
+			},
+			'write': function(e){
+				return 'mo ' + 	self.getTarget(e);
+
+			}
+		},
+		{
+			'name': 'mouseout',
+			'short': 'mu',
+			'play': function(ev){
+				console.log(ev[1])
+				lib(ev[2]).trigger('mouseout');
+			},
+			'write': function(e){
+				return 'mu ' + 	self.getTarget(e);
+
+			}
+		},
+		{
+			'name': 'keydown',
 			'short': 'kd',
 			'play'		: function(ev){
 				console.info(ev);
-				lib(ev[5]).val(ev[6]);
+				var t = ev.slice(6).join(' ');				
+				lib(ev[5]).val(t);
 			},
 			'write': function(e) {
 				var c = e.keyCode,
@@ -91,8 +115,10 @@ jQuery(function() {
 			'name': 'resize',
 			'short': 'rs',
 			'play'		: function(ev){
+				win.resizeTo(parseFloat(ev[2]),parseFloat(ev[3]));
 			},
 			'write': function(e) {
+//				//console.log(self.getScreenSize());
 				return 'rs ' + self.getScreenSize()
 			}
 		},
@@ -100,7 +126,7 @@ jQuery(function() {
 			'name': 'scroll',
 			'short': 'sc',
 			'play'		: function(ev){
-				console.log(ev);
+				win.scroll(parseFloat(ev[2]),parseFloat(ev[3]));				
 			},
 			'write': function(e) {
 				return 'sc ' + self.getScreenScroll()
@@ -110,7 +136,9 @@ jQuery(function() {
 			'name': 'focusout',
 			'short': 'bl',
 			'play'		: function(ev){
-				lib(ev[3]).val(ev[4]);
+				console.log(ev)
+				var t = ev.slice(4).join(' ');				
+				lib(ev[3]).val(t);
 			},
 			'write': function(e) {
 				return 'bl ' + self.getTarget(e) + ' ' + e.target.value;
@@ -120,7 +148,9 @@ jQuery(function() {
 			'name'	: 'focusin',
 			'short'	: 'fo',
 			'play'		: function(ev){
-				lib(ev[3]).val(ev[4]);
+				console.log(ev)
+				var t = ev.slice(4).join(' ');				
+				lib(ev[3]).val(t);
 			},
 			'write': function(e) {
 				return 'fo ' + self.getTarget(e) + ' ' + e.target.value;
@@ -128,17 +158,33 @@ jQuery(function() {
 		}];
 
 		self.init = function() {
+			self.checkValues();
 			if(self.defaults.controls){
 				self.buildControls();
 			}
 			self.attachEvents();
 			self.setTimer();
 		};
+		self.checkValues = function(){
+			self.inputs = lib('input');
+			self.inputs.each(function(){
+				self.values[self.inputs.index(this)] = $(this).val();
+			})
+		};
 		self.buildControls = function(){
+			var css = '.ui-icon { width: 16px; height: 16px; float :left; background-image:'
+				+ 'url(http://jqueryui.com//themeroller/images/?new=333333&w=256&h=240&f=png&fltr[]=rcd|256&fltr[]=mask|icons/icons.png); }'
+				+'.ui-icon:hover {background-image: url(http://jqueryui.com//themeroller/images/?new=FF7700&w=256&h=240&f=png&fltr[]=rcd|256&fltr[]=mask|icons/icons.png); }'
+				+'.ui-icon:active {background-image: url(http://jqueryui.com//themeroller/images/?new=222222&w=256&h=240&f=png&fltr[]=rcd|256&fltr[]=mask|icons/icons.png); }'
+				+'.ui-icon-circle-triangle-e { background-position: -48px -192px; }'
+				+'.ui-icon-circle-close { background-position: -32px -192px; }';
+			
+			$('<style>'+css+'</style>').appendTo('body');
+
 			var controls =  '<ul style="margin:0;padding:0;float:left;">';
 					controls += '<li id="katanoo" style="padding-left:2px; display:inline;margin:0;padding:0; line-height: 16px; list-style: none;font-size:9px; font-family: Monaco, courier; height: 16px; float: left; margin-right: 5px;">Katanoo</li>';
-					controls += '<li id="katanoo_stop" style="display:inline;margin:0;padding:0;list-style: none; width:16px; height: 16px; float: left; background: url(http://jqueryui.com/themeroller/images/?new=454545&w=256&h=240&f=png&fltr[]=rcd|256&fltr[]=mask|icons/icons.png) no-repeat -32px -192px;;"></li>';
-					controls += '<li id="katanoo_play" style="display:inline;margin:0;padding:0;list-style: none; width:16px; height: 16px; float: left; background: url(http://jqueryui.com/themeroller/images/?new=454545&w=256&h=240&f=png&fltr[]=rcd|256&fltr[]=mask|icons/icons.png) no-repeat -48px -192px"></li>';
+					controls += '<li id="katanoo_stop" style="display:inline;list-style: none;" class="ui-icon ui-icon-circle-close"></li>';
+					controls += '<li id="katanoo_play" style="display:inline;list-style: none;" class="ui-icon ui-icon-circle-triangle-e"></li>';
 					controls += '</ul>';
 			var wrap = lib('<div>', {
 				'id': 'katanoo_controls', 
@@ -148,8 +194,10 @@ jQuery(function() {
 					'float': 'left', 
 					'padding': '2px',
 					'height': '16px', 
+					'top': '2px',
+					'left': '2px',
 					'margin': '0 4px 0 0',
-					'position': 'absolute',
+					'position': 'fixed',
 					'-moz-border-radius': '4px',
 					'-webkit-border-radius': '4px',
 					'border-radius': '4px'
@@ -172,7 +220,7 @@ jQuery(function() {
 		self.attachEvents = function() {
 			win.onresize = doc.onscroll = self.writeLog; 
 			doc.onunload = self.sendLog;
-			lib('body').live('click mousemove keyup', self.writeLog)
+			lib('body').live('click mousemove keydown mouseover mouseout', self.writeLog)
 			lib(':text').live('focusin focusout', self.writeLog);
 		};
 		self.writeLog = function(e) {
@@ -201,7 +249,7 @@ jQuery(function() {
 				if(el.className) return path + '.' + el.className; 
 				if(el.nodeName.toLowerCase() === 'img') return path + '[src=' + el.src +']';
 				
-				return path+' *:eq('+index+')';
+				return ' *:eq('+index+')';
 		};
 		self.getCoordinates = function(e) {
 			return e.pageX + ' ' + e.pageY;
@@ -212,12 +260,12 @@ jQuery(function() {
 			if (typeof(win.innerWidth) == 'number') {
 				w = win.innerWidth;
 				h = win.innerHeight
-			} else if (doc.documentElement && (doc.documentElement.clientWidth || doc.documentElement.clientHeight)) {
-				w = doc.documentElement.clientWidth;
-				h = doc.documentElement.clientHeight
-			} else if (doc.body && (doc.body.clientWidth || doc.body.clientHeight)) {
-				w = doc.body.clientWidth;
-				h = doc.body.clientHeight
+			} else if (doc.documentElement && (doc.documentElement.outerWidth || doc.documentElement.outerHeight)) {
+				w = doc.documentElement.outerWidth;
+				h = doc.documentElement.outerHeight
+			} else if (doc.body && (doc.body.outerWidth || doc.body.outerHeight)) {
+				w = doc.body.outerWidth;
+				h = doc.body.outerHeight
 			} else {
 				return false
 			}
@@ -242,12 +290,12 @@ jQuery(function() {
 		}
 		self.sendData = function() {
 			var sendData = JSON.stringify(self.data);
-			lib.ajax({
+/*			lib.ajax({
 				type: 'POST',
 				data: sendData,
 				url: self.postURL
-			});
-//			console.log(JSON.parse(sendData), sendData);
+			}); */
+//			//console.log(JSON.parse(sendData), sendData);
 //			self.data.events = [];
 			self.eventsStorage.push(self.data.events);
 		};
@@ -258,7 +306,12 @@ jQuery(function() {
 			self.setTimer();
 		};
 		self.play = function(){
-			console.time('playing is delayed')
+			//console.time('playing is delayed')
+			win.scroll(0,0);
+			// REsetting inputs
+			self.inputs.each(function(){
+				$(this).val(self.values[self.inputs.index(this)]);
+			});
 			self.mouse = lib('<div>', {
 				css: {
 					'background': 'red', 
@@ -278,24 +331,25 @@ jQuery(function() {
 					}
 				}, parseFloat(ev[0]));
 			});			
-			console.timeEnd('playing is delayed')
-			console.log('starting to play '+ self.data.events.length + ' events')
+//			//console.timeEnd('playing is delayed')
+//			//console.log('starting to play '+ self.data.events.length + ' events')
 		};
 		self.data = {
 			id: self.uniqueid,
 			time: time,
 			url: doc.location,
+			cached_inputs: self.values,
 			browser: {
 				agent: nav.userAgent,
 				oscpu: nav.oscpu,
 				language: nav.language,
+				window: win.outerWidth + ' ' + win.outerHeight,
 				screen: screen.availWidth + ' ' + screen.availHeight,
 				browser: self.getScreenSize(),
 				cookies: doc.cookie
 			},
 			events: []
 		};
-
 		self.init();
 	}();
 });
