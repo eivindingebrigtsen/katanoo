@@ -10,9 +10,9 @@ jQuery(function() {
 
 
 				// From Server
-				self.postURL = "#";
+				self.postURL = "http://server1.katanoo.com:8000/put";
 				self.interval = 5000;
-				self.uniqueid = 'uniqueid';
+				self.uniqueid = 'funk';
 
 		self.values = {};
 		self.defaults = lib.extend({
@@ -290,11 +290,13 @@ jQuery(function() {
 		}
 		self.sendData = function() {
 			var sendData = JSON.stringify(self.data);
-/*			lib.ajax({
-				type: 'POST',
-				data: sendData,
-				url: self.postURL
-			}); */
+//			lib('<script type="text/javascript" charset="utf-8" src="'+self.postURL+'?'+self.uniqueid+'='+escape(sendData)+'" />').appendTo('body');
+			console.log((sendData))
+			 // lib.ajax({
+			 //         dataType: 'jsonp',
+			 // 	data: { uniqueid : escape(sendData) },
+			 // 	url: self.postURL
+			 // }); 
 //			////console.log(JSON.parse(sendData), sendData);
 //			self.data.events = [];
 			self.eventsStorage.push(self.data.events);
