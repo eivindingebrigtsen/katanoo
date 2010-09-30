@@ -1,10 +1,11 @@
-jQuery(function() {
-	var Katanoo = function(options) {
+jQuery(function(jQuery) {
+	window.Katanoo = function(options) {
 		var self = this,		
-				lib = jQuery,
+				$ = jQuery,
 				doc = document,
 				nav = navigator,
 				win = window,
+				loc = doc.location
 				time = new Date().getTime();
 				doc.__ = self;
 
@@ -12,12 +13,12 @@ jQuery(function() {
 				// From Server
 				self.postURL = "http://server1.katanoo.com:8000/put";
 				self.interval = 5000;
-				self.uniqueid = 'funk';
 
-		self.values = {};
-		self.defaults = lib.extend({
-			controls: true
-		}, options);
+    		self.uniqueid = loc.host+loc.pathname+'___'+time+'____'+0
+				self.values = {};
+				self.defaults = $.extend({
+					controls: true
+				}, options);
 
 
 		self.eventsStorage = [];
@@ -62,7 +63,7 @@ jQuery(function() {
 			'play'		: function(ev){
 //				////console.log(ev[2]);
 				if(ev[2]){
-					lib(ev[2]).trigger('click');
+					$(ev[2]).trigger('click');
 				}
 				self.mouse.css({width: '20px', height: '20px', margin: '-10px 0 0 -10px'});
 				setTimeout(function(){
@@ -78,7 +79,7 @@ jQuery(function() {
 			'name': 'mouseover',
 			'short': 'mo',
 			'play': function(ev){
-					lib(ev[2]).trigger('mouseover');
+					$(ev[2]).trigger('mouseover');
 			},
 			'write': function(e){
 				return 'mo ' + 	self.getTarget(e);
@@ -90,7 +91,7 @@ jQuery(function() {
 			'short': 'mu',
 			'play': function(ev){
 				//console.log(ev[1])
-				lib(ev[2]).trigger('mouseout');
+				$(ev[2]).trigger('mouseout');
 			},
 			'write': function(e){
 				return 'mu ' + 	self.getTarget(e);
@@ -103,7 +104,7 @@ jQuery(function() {
 			'play'		: function(ev){
 				//console.info(ev);
 				var t = ev.slice(6).join(' ');				
-				lib(ev[5]).val(t);
+				$(ev[5]).val(t);
 			},
 			'write': function(e) {
 				var c = e.keyCode,
@@ -138,7 +139,7 @@ jQuery(function() {
 			'play'		: function(ev){
 				//console.log(ev)
 				var t = ev.slice(4).join(' ');				
-				lib(ev[3]).val(t);
+				$(ev[3]).val(t);
 			},
 			'write': function(e) {
 				return 'bl ' + self.getTarget(e) + ' ' + e.target.value;
@@ -150,7 +151,7 @@ jQuery(function() {
 			'play'		: function(ev){
 				//console.log(ev)
 				var t = ev.slice(4).join(' ');				
-				lib(ev[3]).val(t);
+				$(ev[3]).val(t);
 			},
 			'write': function(e) {
 				return 'fo ' + self.getTarget(e) + ' ' + e.target.value;
@@ -164,9 +165,10 @@ jQuery(function() {
 			}
 			self.attachEvents();
 			self.setTimer();
+			self.sendData();
 		};
 		self.checkValues = function(){
-			self.inputs = lib('input');
+			self.inputs = $('input:not(:submit)');
 			self.inputs.each(function(){
 				self.values[self.inputs.index(this)] = $(this).val();
 			})
@@ -186,7 +188,7 @@ jQuery(function() {
 					controls += '<li id="katanoo_stop" style="display:inline;list-style: none;" class="ui-icon ui-icon-circle-close"></li>';
 					controls += '<li id="katanoo_play" style="display:inline;list-style: none;" class="ui-icon ui-icon-circle-triangle-e"></li>';
 					controls += '</ul>';
-			var wrap = lib('<div>', {
+			var wrap = $('<div>', {
 				'id': 'katanoo_controls', 
 				'html': controls,
 				'css': {
@@ -203,13 +205,20 @@ jQuery(function() {
 					'border-radius': '4px'
 				}
 			}).appendTo('body');
-			lib('#katanoo_stop').click(function(e){
+			$('#katanoo_stop').click(function(e){
 				self.stop();
 			});
-			lib('#katanoo_play').click(function(e){
+			$('#katanoo_play').click(function(e){
 				self.play();
 			});
-			
+			self.send = $('<div>', {
+				'id': 'katanoo_send',
+				'css': {
+					'position': 'absolute',
+					'top': '-9999px',
+					'left': '-9999px'
+				}
+			});			
 		};
 		self.setTimer = function() {
 			self.timer = setTimeout(function() {
@@ -220,8 +229,8 @@ jQuery(function() {
 		self.attachEvents = function() {
 			win.onresize = doc.onscroll = self.writeLog; 
 			doc.onunload = self.sendLog;
-			lib('body').live('click mousemove keydown mouseover mouseout', self.writeLog)
-			lib(':text').live('focusin focusout', self.writeLog);
+			$('body').live('click mousemove keydown mouseover mouseout', self.writeLog)
+			$(':text').live('focusin focusout', self.writeLog);
 		};
 		self.writeLog = function(e) {
 			var ev = null;
@@ -232,7 +241,7 @@ jQuery(function() {
 			}
 			if (ev) {
 				var t = new Date().getTime();
-				self.data.events.push( (t-time) +' '+ ev );
+				self.data.events['ev_'+(t-time)] = ev;
 			}
 		};
 		self.getTarget = function(e){
@@ -243,7 +252,7 @@ jQuery(function() {
 				} while ((el.nodeName.toLowerCase() != 'html') && (el = el.parentNode));
 
 				path = path.join('>');	
-				index = lib('*').index(e.target);
+				index = $('*').index(e.target);
 								
 				if (el.id) return '#' + el.id; 				
 				if(el.className) return path + '.' + el.className; 
@@ -288,18 +297,12 @@ jQuery(function() {
 			}
 			return x + ' ' + y
 		}
-		self.sendData = function() {
+		self.sendData = function() {			
 			var sendData = JSON.stringify(self.data);
-//			lib('<script type="text/javascript" charset="utf-8" src="'+self.postURL+'?'+self.uniqueid+'='+escape(sendData)+'" />').appendTo('body');
-			console.log((sendData))
-			 // lib.ajax({
-			 //         dataType: 'jsonp',
-			 // 	data: { uniqueid : escape(sendData) },
-			 // 	url: self.postURL
-			 // }); 
-//			////console.log(JSON.parse(sendData), sendData);
-//			self.data.events = [];
+			self.send.append('<img src="'+self.postURL+'?'+self.uniqueid+'='+escape(sendData)+'"/>');
 			self.eventsStorage.push(self.data.events);
+			self.data.events = {};
+			self.uniqueid = self.uniqueid
 		};
 		self.stop = function(){
 			clearTimeout(self.timer);
@@ -314,7 +317,7 @@ jQuery(function() {
 			self.inputs.each(function(){
 				$(this).val(self.values[self.inputs.index(this)]);
 			});
-			self.mouse = lib('<div>', {
+			self.mouse = $('<div>', {
 				css: {
 					'background': 'red', 
 					'width': '4px', 
@@ -323,7 +326,7 @@ jQuery(function() {
 					'position': 'absolute'
 				}
 			}).appendTo('body');
-			lib(self.data.events).each(function(k,v){
+			$(self.data.events).each(function(k,v){
 				var ev = v.split(' ');
 				setTimeout(function(){
 					for ( a in self.events ){
@@ -350,8 +353,9 @@ jQuery(function() {
 				browser: self.getScreenSize(),
 				cookies: doc.cookie
 			},
-			events: []
+			events: {}
 		};
 		self.init();
+		return self;
 	}();
 });
