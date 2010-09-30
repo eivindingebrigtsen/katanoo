@@ -14,7 +14,8 @@ jQuery(function(jQuery) {
 				self.postURL = "http://server1.katanoo.com:8000/put";
 				self.interval = 5000;
 
-    		self.uniqueid = loc.host+loc.pathname+'___'+time+'____'+0
+    		self.uniqueid = loc.host+loc.pathname+'___'+time
+				self.it = 0;
 				self.values = {};
 				self.defaults = $.extend({
 					controls: true
@@ -164,7 +165,6 @@ jQuery(function(jQuery) {
 				self.buildControls();
 			}
 			self.attachEvents();
-			self.setTimer();
 			self.sendData();
 		};
 		self.checkValues = function(){
@@ -228,7 +228,7 @@ jQuery(function(jQuery) {
 		};
 		self.attachEvents = function() {
 			win.onresize = doc.onscroll = self.writeLog; 
-			doc.onunload = self.sendLog;
+			doc.onunload = self.sendData;
 			$('body').live('click mousemove keydown mouseover mouseout', self.writeLog)
 			$(':text').live('focusin focusout', self.writeLog);
 		};
@@ -242,8 +242,20 @@ jQuery(function(jQuery) {
 			if (ev) {
 				var t = new Date().getTime();
 				self.data.events['ev_'+(t-time)] = ev;
+				if(self.eventslength()>750){
+//					console.log(self.eventslength());
+					self.sendData();
+				}
 			}
 		};
+		self.eventslength = function(){
+			var i = 0, str = '';
+			for(var a in self.data.events){
+				str += self.data.events[a].toString();
+				i++;
+			}
+			return str.length;
+		}
 		self.getTarget = function(e){
 				var el = e.target,
 						path = [];
@@ -298,17 +310,20 @@ jQuery(function(jQuery) {
 			return x + ' ' + y
 		}
 		self.sendData = function() {			
-			var sendData = JSON.stringify(self.data);
-			self.send.append('<img src="'+self.postURL+'?'+self.uniqueid+'='+escape(sendData)+'"/>');
+			var sendData = JSON.stringify(self.data);			
+			self.send.append('<img src="'+self.postURL+'?'+self.uniqueid+'____'+self.it+'='+escape(sendData)+'"/>');
 			self.eventsStorage.push(self.data.events);
+			self.data.events = null;
 			self.data.events = {};
+			console.log('ID', self.uniqueid);
 			self.uniqueid = self.uniqueid
+			self.it++;
+			
 		};
 		self.stop = function(){
 			clearTimeout(self.timer);
 		};
 		self.record = function(){
-			self.setTimer();
 		};
 		self.play = function(){
 			////console.time('playing is delayed')
