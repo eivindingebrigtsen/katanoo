@@ -14,11 +14,12 @@ jQuery(function(jQuery) {
 				self.postURL = "http://server1.katanoo.com:8000/put";
 				self.interval = 5000;
 
-    		self.uniqueid = loc.host+loc.pathname+'___'+time
+    		self.uniqueid = time;
+    		self.uri = loc.host+loc.pathname;
 				self.it = 0;
 				self.values = {};
 				self.defaults = $.extend({
-					controls: true
+					controls: false
 				}, options);
 
 
@@ -164,8 +165,20 @@ jQuery(function(jQuery) {
 			if(self.defaults.controls){
 				self.buildControls();
 			}
+			self.addSender();
 			self.attachEvents();
 			self.sendData();
+		};
+		self.addSender = function(){
+			self.send = $('<div>', {
+				'id': 'katanoo_send',
+				'css': {
+					'position': 'absolute',
+					'top': '-9999px',
+					'left': '-9999px'
+				}
+			}).appendTo('body');			
+
 		};
 		self.checkValues = function(){
 			self.inputs = $('input:not(:submit)');
@@ -211,14 +224,6 @@ jQuery(function(jQuery) {
 			$('#katanoo_play').click(function(e){
 				self.play();
 			});
-			self.send = $('<div>', {
-				'id': 'katanoo_send',
-				'css': {
-					'position': 'absolute',
-					'top': '-9999px',
-					'left': '-9999px'
-				}
-			});			
 		};
 		self.setTimer = function() {
 			self.timer = setTimeout(function() {
@@ -242,7 +247,7 @@ jQuery(function(jQuery) {
 			if (ev) {
 				var t = new Date().getTime();
 				self.data.events['ev_'+(t-time)] = ev;
-				if(self.eventslength()>750){
+				if(self.eventslength()>550){
 //					console.log(self.eventslength());
 					self.sendData();
 				}
@@ -309,13 +314,25 @@ jQuery(function(jQuery) {
 			}
 			return x + ' ' + y
 		}
+		self.escapeData = function(data){
+      var str = "";
+		  for (var a in data){
+		    if(typeof(data[a]) === 'object'){
+		      str += self.escapeData(data[a])
+		    }else if(data[a]){
+		      str += "&"+a+'='+escape(data[a]);		      
+		    }
+		  }
+		  return str;
+		},
 		self.sendData = function() {			
-			var sendData = JSON.stringify(self.data);			
-			self.send.append('<img src="'+self.postURL+'?'+self.uniqueid+'____'+self.it+'='+escape(sendData)+'"/>');
-			self.eventsStorage.push(self.data.events);
+			var sendData = self.data;			
+//      console.log('?uri='+self.uri+'&id='+self.uniqueid+self.escapeData(sendData));
+			self.send.append('<img src="'+self.postURL+'?uri='+self.uri+'&id='+self.uniqueid+self.escapeData(sendData)+'"/>');
+//			self.eventsStorage.push(self.data.events);
 			self.data.events = null;
 			self.data.events = {};
-			console.log('ID', self.uniqueid);
+//			console.log('ID', self.uniqueid);
 			self.uniqueid = self.uniqueid
 			self.it++;
 			
@@ -355,9 +372,6 @@ jQuery(function(jQuery) {
 //			////console.log('starting to play '+ self.data.events.length + ' events')
 		};
 		self.data = {
-			id: self.uniqueid,
-			time: time,
-			url: doc.location,
 			cached_inputs: self.values,
 			browser: {
 				agent: nav.userAgent,
