@@ -5,15 +5,12 @@ jQuery(function(jQuery) {
 				doc = document,
 				nav = navigator,
 				win = window,
-				loc = doc.location
+				loc = doc.location,
 				time = new Date().getTime();
 				doc.__ = self;
 
-
-				// From Server
 				self.postURL = "http://server1.katanoo.com:8000/put";
 				self.interval = 5000;
-
     		self.uniqueid = time;
     		self.uri = loc.host+loc.pathname;
 				self.it = 0;
@@ -22,8 +19,6 @@ jQuery(function(jQuery) {
 					controls: false
 				}, options);
 
-
-		self.eventsStorage = [];
 		self.keys = {
 			8: 'backspace',
 			9: 'tab',
@@ -53,7 +48,7 @@ jQuery(function(jQuery) {
 			'name': 'mousemove',
 			'short': 'mm',
 			'play'		: function(ev){
-				self.mouse.css({'left': ev[2]+'px', 'top': ev[3]+'px', })
+				self.mouse.css({'left': ev[2]+'px', 'top': ev[3]+'px'});
 			},
 			'write': function(e) {
 				return 'mm ' + self.getCoordinates(e);
@@ -63,7 +58,6 @@ jQuery(function(jQuery) {
 			'name': 'click',
 			'short': 'cl',
 			'play'		: function(ev){
-//				////console.log(ev[2]);
 				if(ev[2]){
 					$(ev[2]).trigger('click');
 				}
@@ -73,7 +67,6 @@ jQuery(function(jQuery) {
 				}, 250);
 			},
 			'write': function(e) {
-//				////console.log(self.getTarget(e));
 				return 'cl ' + 	self.getTarget(e);
 			}
 		},
@@ -92,7 +85,6 @@ jQuery(function(jQuery) {
 			'name': 'mouseout',
 			'short': 'mu',
 			'play': function(ev){
-				//console.log(ev[1])
 				$(ev[2]).trigger('mouseout');
 			},
 			'write': function(e){
@@ -104,7 +96,6 @@ jQuery(function(jQuery) {
 			'name': 'keydown',
 			'short': 'kd',
 			'play'		: function(ev){
-				//console.info(ev);
 				var t = ev.slice(6).join(' ');				
 				$(ev[5]).val(t);
 			},
@@ -121,8 +112,7 @@ jQuery(function(jQuery) {
 				win.resizeTo(parseFloat(ev[2]),parseFloat(ev[3]));
 			},
 			'write': function(e) {
-//				////console.log(self.getScreenSize());
-				return 'rs ' + self.getScreenSize()
+				return 'rs ' + self.getScreenSize();
 			}
 		},
 		{
@@ -132,14 +122,13 @@ jQuery(function(jQuery) {
 				win.scroll(parseFloat(ev[2]),parseFloat(ev[3]));				
 			},
 			'write': function(e) {
-				return 'sc ' + self.getScreenScroll()
+				return 'sc ' + self.getScreenScroll();
 			}
 		},
 		{
 			'name': 'focusout',
 			'short': 'bl',
 			'play'		: function(ev){
-				//console.log(ev)
 				var t = ev.slice(4).join(' ');				
 				$(ev[3]).val(t);
 			},
@@ -151,7 +140,6 @@ jQuery(function(jQuery) {
 			'name'	: 'focusin',
 			'short'	: 'fo',
 			'play'		: function(ev){
-				//console.log(ev)
 				var t = ev.slice(4).join(' ');				
 				$(ev[3]).val(t);
 			},
@@ -162,9 +150,6 @@ jQuery(function(jQuery) {
 
 		self.init = function() {
 			self.checkValues();
-			if(self.defaults.controls){
-				self.buildControls();
-			}
 			self.addSender();
 			self.attachEvents();
 			self.sendData();
@@ -184,62 +169,17 @@ jQuery(function(jQuery) {
 			self.inputs = $('input:not(:submit)');
 			self.inputs.each(function(){
 				self.values[self.inputs.index(this)] = $(this).val();
-			})
-		};
-		self.buildControls = function(){
-			var css = '.ui-icon { width: 16px; height: 16px; float :left; background-image:'
-				+ 'url(http://jqueryui.com//themeroller/images/?new=333333&w=256&h=240&f=png&fltr[]=rcd|256&fltr[]=mask|icons/icons.png); }'
-				+'.ui-icon:hover {background-image: url(http://jqueryui.com//themeroller/images/?new=FF7700&w=256&h=240&f=png&fltr[]=rcd|256&fltr[]=mask|icons/icons.png); }'
-				+'.ui-icon:active {background-image: url(http://jqueryui.com//themeroller/images/?new=222222&w=256&h=240&f=png&fltr[]=rcd|256&fltr[]=mask|icons/icons.png); }'
-				+'.ui-icon-circle-triangle-e { background-position: -48px -192px; }'
-				+'.ui-icon-circle-close { background-position: -32px -192px; }';
-			
-			$('<style>'+css+'</style>').appendTo('body');
-
-			var controls =  '<ul style="margin:0;padding:0;float:left;">';
-					controls += '<li id="katanoo" style="padding-left:2px; display:inline;margin:0;padding:0; line-height: 16px; list-style: none;font-size:9px; font-family: Monaco, courier; height: 16px; float: left; margin-right: 5px;">Katanoo</li>';
-					controls += '<li id="katanoo_stop" style="display:inline;list-style: none;" class="ui-icon ui-icon-circle-close"></li>';
-					controls += '<li id="katanoo_play" style="display:inline;list-style: none;" class="ui-icon ui-icon-circle-triangle-e"></li>';
-					controls += '</ul>';
-			var wrap = $('<div>', {
-				'id': 'katanoo_controls', 
-				'html': controls,
-				'css': {
-					'background': '#eee',
-					'float': 'left', 
-					'padding': '2px',
-					'height': '16px', 
-					'top': '2px',
-					'left': '2px',
-					'margin': '0 4px 0 0',
-					'position': 'fixed',
-					'-moz-border-radius': '4px',
-					'-webkit-border-radius': '4px',
-					'border-radius': '4px'
-				}
-			}).appendTo('body');
-			$('#katanoo_stop').click(function(e){
-				self.stop();
 			});
-			$('#katanoo_play').click(function(e){
-				self.play();
-			});
-		};
-		self.setTimer = function() {
-			self.timer = setTimeout(function() {
-				self.sendData();
-				self.setTimer();
-			},self.interval);
 		};
 		self.attachEvents = function() {
 			win.onresize = doc.onscroll = self.writeLog; 
 			doc.onunload = self.sendData;
-			$('body').live('click mousemove keydown mouseover mouseout', self.writeLog)
+			$('body').live('click mousemove keydown mouseover mouseout', self.writeLog);
 			$(':text').live('focusin focusout', self.writeLog);
 		};
 		self.writeLog = function(e) {
 			var ev = null;
-			for (a in self.events) {
+			for (var a in self.events) {
 				if (self.events[a].name === e.type) {
 					ev = self.events[a].write(e);
 				}
@@ -247,8 +187,7 @@ jQuery(function(jQuery) {
 			if (ev) {
 				var t = new Date().getTime();
 				self.data.events['ev_'+(t-time)] = ev;
-				if(self.eventslength()>550){
-//					console.log(self.eventslength());
+				if(self.eventslength()>650){
 					self.sendData();
 				}
 			}
@@ -260,10 +199,10 @@ jQuery(function(jQuery) {
 				i++;
 			}
 			return str.length;
-		}
+		};
 		self.getTarget = function(e){
 				var el = e.target,
-						path = [];
+						path = [], index;
 				do {
     			path.unshift(el.nodeName + (el.className ? ' class="' + el.className + '"' : ''));
 				} while ((el.nodeName.toLowerCase() != 'html') && (el = el.parentNode));
@@ -271,81 +210,77 @@ jQuery(function(jQuery) {
 				path = path.join('>');	
 				index = $('*').index(e.target);
 								
-				if (el.id) return '#' + el.id; 				
-				if(el.className) return path + '.' + el.className; 
-				if(el.nodeName.toLowerCase() === 'img') return path + '[src=' + el.src +']';
-				
+				if (el.id){ 
+				  return '#' + el.id;
+				}
+				if(el.className) {
+				  return path + '.' + el.className; 
+				}
+				if(el.nodeName.toLowerCase() === 'img') {
+				  return path + '[src=' + el.src +']';
+				}
 				return ' *:eq('+index+')';
 		};
 		self.getCoordinates = function(e) {
 			return e.pageX + ' ' + e.pageY;
-		}
+		};
 		self.getScreenSize = function() {
 			var w = 0,
 				h = 0;
 			if (typeof(win.innerWidth) == 'number') {
 				w = win.innerWidth;
-				h = win.innerHeight
+				h = win.innerHeight;
 			} else if (doc.documentElement && (doc.documentElement.outerWidth || doc.documentElement.outerHeight)) {
 				w = doc.documentElement.outerWidth;
-				h = doc.documentElement.outerHeight
+				h = doc.documentElement.outerHeight;
 			} else if (doc.body && (doc.body.outerWidth || doc.body.outerHeight)) {
 				w = doc.body.outerWidth;
-				h = doc.body.outerHeight
+				h = doc.body.outerHeight;
 			} else {
-				return false
+				return false;
 			}
-			return w + ' ' + h
-		}
+			return w + ' ' + h;
+		};
 		self.getScreenScroll = function() {
 			var x = 0,
 				y = 0;
 			if (typeof(win.pageYOffset) == 'number') {
 				x = win.pageXOffset;
-				y = win.pageYOffset
+				y = win.pageYOffset;
 			} else if (doc.documentElement && (doc.documentElement.scrollLeft || doc.documentElement.scrollTop)) {
 				y = doc.documentElement.scrollTop;
-				x = doc.documentElement.scrollLeft
+				x = doc.documentElement.scrollLeft;
 			} else if (doc.body && (doc.body.scrollTop !== undefined)) {
 				x = doc.body.scrollLeft;
-				y = doc.body.scrollTop
+				y = doc.body.scrollTop;
 			} else {
-				return false
+				return false;
 			}
-			return x + ' ' + y
-		}
+			return x + ' ' + y;
+		};
 		self.escapeData = function(data){
       var str = "";
 		  for (var a in data){
 		    if(typeof(data[a]) === 'object'){
-		      str += self.escapeData(data[a])
+		      str += self.escapeData(data[a]);
 		    }else if(data[a]){
 		      str += "&"+a+'='+escape(data[a]);		      
 		    }
 		  }
 		  return str;
-		},
+		};
 		self.sendData = function() {			
 			var sendData = self.data;			
-//      console.log('?uri='+self.uri+'&id='+self.uniqueid+self.escapeData(sendData));
 			self.send.append('<img src="'+self.postURL+'?uri='+self.uri+'&id='+self.uniqueid+self.escapeData(sendData)+'"/>');
-//			self.eventsStorage.push(self.data.events);
 			self.data.events = null;
 			self.data.events = {};
-//			console.log('ID', self.uniqueid);
-			self.uniqueid = self.uniqueid
+			self.uniqueid = self.uniqueid;
 			self.it++;
-			
-		};
-		self.stop = function(){
-			clearTimeout(self.timer);
-		};
-		self.record = function(){
 		};
 		self.play = function(){
-			////console.time('playing is delayed')
+      var v;
 			win.scroll(0,0);
-			// REsetting inputs
+			// Resetting inputs
 			self.inputs.each(function(){
 				$(this).val(self.values[self.inputs.index(this)]);
 			});
@@ -358,7 +293,8 @@ jQuery(function(jQuery) {
 					'position': 'absolute'
 				}
 			}).appendTo('body');
-			$(self.data.events).each(function(k,v){
+      for(var a in self.data.events){
+        v =  self.data.events[a];
 				var ev = v.split(' ');
 				setTimeout(function(){
 					for ( a in self.events ){
@@ -366,22 +302,18 @@ jQuery(function(jQuery) {
 								self.events[a]['play'](ev);
 						}
 					}
-				}, parseFloat(ev[0]));
-			});			
-//			////console.timeEnd('playing is delayed')
-//			////console.log('starting to play '+ self.data.events.length + ' events')
+				}, parseFloat(ev[0]));        
+      }
 		};
 		self.data = {
 			cached_inputs: self.values,
-			browser: {
-				agent: nav.userAgent,
-				oscpu: nav.oscpu,
-				language: nav.language,
-				window: win.outerWidth + ' ' + win.outerHeight,
-				screen: screen.availWidth + ' ' + screen.availHeight,
-				browser: self.getScreenSize(),
-				cookies: doc.cookie
-			},
+			agent: nav.userAgent,
+			oscpu: nav.oscpu,
+			language: nav.language,
+			window: win.outerWidth + ' ' + win.outerHeight,
+			screen: screen.availWidth + ' ' + screen.availHeight,
+			browser: self.getScreenSize(),
+			cookies: doc.cookie,
 			events: {}
 		};
 		self.init();
