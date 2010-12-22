@@ -157,7 +157,9 @@ window.visualize = function(data){
       title: {text: 'Visits / Clicks'},
       xAxis: {categories: daylabels, labels:{enabled: false}},
       yAxis: {min: 0, labels: {formatter: function(){return this.value;}}},
-      tooltip:{shared: true, 
+      tooltip:{
+        shared: true,
+        crosshairs: true, 
         formatter: function(){
           var str = '';
           str += this.points[0].x + '<br/>';
@@ -242,7 +244,9 @@ window.visualize = function(data){
    });
    var sizeseries = [];
    for (var e in sizes){
-     sizeseries.push(['< '+e+'px',sizes[e]]);
+     if(sizes[e] !== 0){
+       sizeseries.push(['< '+e+'px',sizes[e]]);
+     }
    }
    var sizechart = new Highcharts.Chart({
       chart: {
@@ -263,18 +267,36 @@ window.visualize = function(data){
         data: sizeseries
       }]
    });
+   
+   // var hart = new Highcharts.Chart({
+   //       chart: {
+   //          renderTo: 'combined',
+   //          defaultSeriesType: 'pie',
+   //          margin: [70,0,20,30]
+   //       },
+   //       credits: {enabled: false},
+   //       legend: {enabled: false},
+   //       title: {text: 'Users'},
+   //       xAxis: {labels: {enabled: false}},
+   //       yAxis: {min: 0, labels: {formatter: function(){return this.value;}}},
+   //       tooltip:{formatter: function(){
+   //           return this.point.name + ': '+this.y;
+   //       }},
+   //      series: [{
+   //         name: 'Browsers',
+   //         innerSize: '45%',
+   //         data: agentseries
+   //       },{
+   //         name: 'Operating Systems',
+   //         innerSize: '20%',
+   //         size: '45%',
+   //         data: osseries
+   //       }
+   //       ]
+   //    });
+   
+   
 };
-
-
-
-
-
-
-
-
-
-
-
 
 
   var checkBrowser = function(agentString){   
@@ -312,7 +334,6 @@ window.visualize = function(data){
       {string: agentString, subString: "iPad",identity: "iPad"},
       {string: agentString, subString: "Linux",identity: "Linux"}
     ];
-
 
       this.browser = searchString(dataBrowser) || "Unknown";
       this.version = searchVersion(agentString) || searchVersion(agentString) || "X";
