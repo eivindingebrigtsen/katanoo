@@ -154,13 +154,13 @@ window.visualize = function(data){
 
   var osseries = [];
   for (var c in os){
-    osseries.push({name: c, data: [os[c]]});
+    osseries.push([c, os[c]]);
   }
   var oschart = new Highcharts.Chart({
       chart: {
          renderTo: 'os',
-         defaultSeriesType: 'column',
-         margin: [10,0,20,30]
+         defaultSeriesType: 'pie',
+         margin: [70,0,20,30]
       },
       credits: {enabled: false},
       legend: {enabled: false},
@@ -168,20 +168,22 @@ window.visualize = function(data){
       xAxis: {labels: {enabled: false}},
       yAxis: {min: 0, labels: {formatter: function(){return this.value;}}},
       tooltip:{formatter: function(){
-          return this.series.name + ': '+this.y;
+          return this.point.name + ': '+this.y;
       }},
-     series: osseries
+     series: [{ 
+       name: 'Operating Systems',
+       data: osseries}]
    });
   var agentseries = [];
   for (var d in agents){
-    agentseries.push({name: d, data: [agents[d].num]});
+    agentseries.push([d, agents[d].num]);
   }
 
   var agentchart = new Highcharts.Chart({
       chart: {
          renderTo: 'browsers',
-         defaultSeriesType: 'column',
-         margin: [10,0,20,30]
+         defaultSeriesType: 'pie',
+         margin: [70,0,20,30]
       },
       credits: {enabled: false},
       legend: {enabled: false},
@@ -189,20 +191,23 @@ window.visualize = function(data){
       xAxis: {labels: {enabled: false}},
       yAxis: {min: 0, labels: {formatter: function(){return this.value;}}},
       tooltip:{formatter: function(){
-          return this.series.name + ': '+this.y;
+          return this.point.name + ': '+this.y;
       }},
-     series: agentseries
+     series: [{
+       name: 'Browsers',
+       data: agentseries
+     }] 
    });
 
    var langseries = [];
    for (var e in langs){
-     langseries.push({name: e, data: [langs[e]]});
+     langseries.push([e,langs[e]]);
    }
    var agentchart = new Highcharts.Chart({
       chart: {
          renderTo: 'langs',
-         defaultSeriesType: 'column',
-         margin: [10,0,20,30]
+         defaultSeriesType: 'pie',
+         margin: [70,0,20,30]
       },
       credits: {enabled: false},
       legend: {enabled: false},
@@ -210,9 +215,12 @@ window.visualize = function(data){
       xAxis: {labels: {enabled: false}},
       yAxis: {min: 0, labels: {formatter: function(){return this.value;}}},
       tooltip:{formatter: function(){
-          return this.series.name + ': '+this.y;
+          return this.point.name + ': '+this.y;
       }},
-     series: langseries
+     series: [{
+        name: 'Languages',
+        data: langseries
+      }]
    });
 
 };
