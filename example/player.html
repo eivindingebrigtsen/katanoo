@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Katanoo Visualization</title>
+		<style type="text/css" media="screen">
+		  #os, #browsers{
+		    width: 350px;
+		    height: 220px;
+		    float: left;
+		    margin-right: 20px;
+		  }
+		  #timeline{
+		    width: 720px;
+		    height: 220px;
+		    
+		    
+		  }
+		  
+		  
+		</style>
+	</head>
+	<body>
+<h1>Statistics</h1>
+    <div id="timeline"></div>
+    <div id="os"></div>
+    <div id="browsers"></div>
+    <div id="screens"></div>
+    <div id="langs"></div>
+
+<script src="http://localhost/jquery.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../lib/highcharts.src.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/visualize.js" type="text/javascript" charset="utf-8"></script>
+    <script src="http://server1.katanoo.com:8000/get?uri=katanoo.com/&presentation=events&callback=visualize" type="text/javascript" charset="utf-8"></script>    
+	</body>
+</html>

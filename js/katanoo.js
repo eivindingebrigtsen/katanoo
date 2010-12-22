@@ -1,23 +1,23 @@
 jQuery(function(jQuery) {
 	window.Katanoo = function(options) {
-		var self = this,		
-				$ = jQuery,
-				doc = document,
-				nav = navigator,
-				win = window,
-				loc = doc.location,
-				time = new Date().getTime();
-				doc.__ = self;
+var self = this,		
+		$ = jQuery,
+		doc = document,
+		nav = navigator,
+		win = window,
+		loc = doc.location,
+		time = new Date().getTime();
+		doc.__ = self;
 
-				self.postURL = "http://server1.katanoo.com:8000/put";
-				self.interval = 5000;
-    		self.uniqueid = time;
-    		self.uri = loc.host+loc.pathname;
-				self.it = 0;
-				self.values = {};
-				self.defaults = $.extend({
-					controls: false
-				}, options);
+		self.postURL = "http://server1.katanoo.com:8000/put";
+		self.interval = 5000;
+		self.uniqueid = time;
+		self.uri = loc.host+loc.pathname;
+		self.it = 0;
+		self.values = {};
+		self.defaults = $.extend({
+			controls: false
+		}, options);
 
 		self.keys = {
 			8: 'backspace',
@@ -41,7 +41,10 @@ jQuery(function(jQuery) {
 			45: 'insert',
 			46: 'delete',
 			91: 'cmd',
-			93: 'cmd'
+			93: 'cmd',
+      186: ':',
+      188: ',',
+			190: '.'
 		};
 		self.events = [
 		{
@@ -102,7 +105,7 @@ jQuery(function(jQuery) {
 			'write': function(e) {
 				var c = e.keyCode,
 					p = (self.keys[c] ? self.keys[c] : String.fromCharCode(e.keyCode));
-				return 'kd ' + p + ' ' + c + ' '+ self.getTarget(e) + ' ' +e.target.value;
+				return 'kd ' + p + ' ' + c + ' '+ self.getTarget(e)
 			}
 		},
 		{
@@ -187,6 +190,7 @@ jQuery(function(jQuery) {
 			if (ev) {
 				var t = new Date().getTime();
 				self.data.events['ev_'+(t-time)] = ev;
+        console.log('ev_'+(t-time), ev);
 				if(self.eventslength()>650){
 					self.sendData();
 				}
@@ -204,7 +208,7 @@ jQuery(function(jQuery) {
 				var el = e.target,
 						path = [], index;
 				do {
-    			path.unshift(el.nodeName + (el.className ? ' class="' + el.className + '"' : ''));
+    			path.unshift(el.nodeName + (el.className ? '.' + el.className + '' : ''));
 				} while ((el.nodeName.toLowerCase() != 'html') && (el = el.parentNode));
 
 				path = path.join('>');	
@@ -269,9 +273,15 @@ jQuery(function(jQuery) {
 		  }
 		  return str;
 		};
+		self.storeData = function(data){
+			for(var a in data){
+				self.storage[a] = data[a];
+			}
+		};
 		self.sendData = function() {			
 			var sendData = self.data;			
 			self.send.append('<img src="'+self.postURL+'?uri='+self.uri+'&id='+self.uniqueid+self.escapeData(sendData)+'"/>');
+			self.storeData(self.data.events);
 			self.data.events = null;
 			self.data.events = {};
 			self.uniqueid = self.uniqueid;
@@ -280,7 +290,6 @@ jQuery(function(jQuery) {
 		self.play = function(){
       var v;
 			win.scroll(0,0);
-			// Resetting inputs
 			self.inputs.each(function(){
 				$(this).val(self.values[self.inputs.index(this)]);
 			});
@@ -293,18 +302,21 @@ jQuery(function(jQuery) {
 					'position': 'absolute'
 				}
 			}).appendTo('body');
-      for(var a in self.data.events){
-        v =  self.data.events[a];
+      for(var a in self.storage){
+        v =  self.storage[a];
+				var time = a.substring(3);
 				var ev = v.split(' ');
+				console.log(time, ev)
 				setTimeout(function(){
 					for ( a in self.events ){
-						if( self.events[a]['short'] === ev[1] ){
+						if( self.events[a]['short'] === ev[0] ){
 								self.events[a]['play'](ev);
 						}
 					}
-				}, parseFloat(ev[0]));        
+				}, parseFloat(time));        
       }
 		};
+		self.storage = {};
 		self.data = {
 			cached_inputs: self.values,
 			agent: nav.userAgent,
