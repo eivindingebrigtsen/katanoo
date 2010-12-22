@@ -2,11 +2,23 @@ window.visualize = function(data){
   var agents  = {},
       windows = {},
       langs   = {},
+      sizes   = {
+        0: 0,
+        640: 0,
+        800: 0,
+        1024: 0,
+        1280: 0,
+        1440: 0,
+        1900: 0,
+        2400: 0,
+        3600: 0
+      },
       os      = {},
       time    = {},
       info    = {}, 
       lang,
-      item, 
+      item,
+      visits = 0, 
       t, 
       d, 
       yy, 
@@ -34,10 +46,10 @@ window.visualize = function(data){
       for (a in data){
         item = data[a];
         if(typeof item !== 'object' || a == "0"){ continue; }
-
+        visits++;
         // Date specifics
         t = parseFloat(a.substr(0,13));
-        low = (low > t ? t :  low);
+        low = (low > t ? t-day :  low);
         high = (high < t ? t : high);
         d.setTime(t);
         yy = d.getFullYear();
@@ -63,10 +75,15 @@ window.visualize = function(data){
         }else{
           langs[lang] = 1;
         }
-        if(item.screen in windows){
-          windows[item.screen]++;
-        }else{
-          windows[item.screen] = 1;      
+        if(item.screen){
+          var size = item.screen.split(' ');
+          size = parseFloat(size[0]);
+          for(var z in sizes){
+            if(size<z){               
+              sizes[z]++;
+              break;
+            }
+          }
         }
         
         info = checkBrowser(data[a].agent);
@@ -97,7 +114,8 @@ window.visualize = function(data){
          session_time.push(l);
         }    
       }
-
+      
+      
   var totaltime = 0;
   var averagetime = 0;
   for(var t in session_time){
@@ -222,7 +240,29 @@ window.visualize = function(data){
         data: langseries
       }]
    });
-
+   var sizeseries = [];
+   for (var e in sizes){
+     sizeseries.push(['< '+e+'px',sizes[e]]);
+   }
+   var sizechart = new Highcharts.Chart({
+      chart: {
+         renderTo: 'screens',
+         defaultSeriesType: 'pie',
+         margin: [70,0,20,30]
+      },
+      credits: {enabled: false},
+      legend: {enabled: false},
+      title: {text: 'Screen Sizes'},
+      xAxis: {labels: {enabled: false}},
+      yAxis: {min: 0, labels: {formatter: function(){return this.value;}}},
+      tooltip:{formatter: function(){
+          return this.point.name + ': '+this.y;
+      }},
+     series: [{
+        name: 'Screen Sizes',
+        data: sizeseries
+      }]
+   });
 };
 
 
