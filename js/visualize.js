@@ -29,73 +29,74 @@ window.visualize = function(data){
       months = ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des'];
       
       $('h1').text('Statistics '+data.URI);
-  d = new Date();
-  for (a in data){
-    item = data[a];
-    if(typeof item !== 'object' || a == "0"){ continue; }
+      d = new Date();
 
-    // Date specifics
-    t = parseFloat(a.substr(0,13));
-    low = (low > t ? t :  low);
-    high = (high < t ? t : high);
-    d.setTime(t);
-    yy = d.getFullYear();
-    mm = d.getMonth()+1;
-    dd = d.getDate();
-    hh = d.getHours()+1;
-    min = d.getMinutes();
-    timeid = dd+'-'+ mm +'-'+yy;
+      for (a in data){
+        item = data[a];
+        if(typeof item !== 'object' || a == "0"){ continue; }
+
+        // Date specifics
+        t = parseFloat(a.substr(0,13));
+        low = (low > t ? t :  low);
+        high = (high < t ? t : high);
+        d.setTime(t);
+        yy = d.getFullYear();
+        mm = d.getMonth()+1;
+        dd = d.getDate();
+        hh = d.getHours();
+        min = d.getMinutes();
+        timeid = dd+'-'+ mm +'-'+yy;
     
-    if(timeid in time){
-      time[timeid].visits++;
-      time[timeid].time.push({hour: hh, min: min})
-    }else{
-      time[timeid] = {
-        visits : 1,
-        time: [{hour: hh, min: min}],
-        clicks: 0        
-      };
-    }
-    lang = (item.language ? item.language.toLowerCase(): undefined);
-    if(lang in langs){
-      langs[lang]++;
-    }else{
-      langs[lang] = 1;
-    }
-    if(item.screen in windows){
-      windows[item.screen]++;
-    }else{
-      windows[item.screen] = 1;      
-    }
-        
-    info = checkBrowser(data[a].agent);
-    if(info.os in os){
-      os[info.os]++;
-    }else{
-      os[info.os] = 1;
-    }
-    if(info.id+' '+info.os in agents){
-      agents[info.id+' '+info.os].num++;
-    }else{
-      agents[info.id+' '+info.os] = info;
-      agents[info.id+' '+info.os].num = 1;
-    }   
-    l = 0; 
-    if("events" in item){
-      for(b in item['events']){
-        ev = item['events'][b];
-        ev_arr = ev.split(' ');
-        cl = parseFloat(b.substr(3));
-        if(l<cl){
-          l = cl;
+        if(timeid in time){
+          time[timeid].visits++;
+          time[timeid].time.push({hour: hh, min: min})
+        }else{
+          time[timeid] = {
+            visits : 1,
+            time: [{hour: hh, min: min}],
+            clicks: 0        
+          };
         }
-        if(ev_arr[0]==='mu'){
-          time[timeid].clicks++;
-        }        
+        lang = (item.language ? item.language.toLowerCase(): undefined);
+        if(lang in langs){
+          langs[lang]++;
+        }else{
+          langs[lang] = 1;
+        }
+        if(item.screen in windows){
+          windows[item.screen]++;
+        }else{
+          windows[item.screen] = 1;      
+        }
+        
+        info = checkBrowser(data[a].agent);
+        if(info.os in os){
+          os[info.os]++;
+        }else{
+          os[info.os] = 1;
+        }
+        if(info.id+' '+info.os in agents){
+          agents[info.id+' '+info.os].num++;
+        }else{
+          agents[info.id+' '+info.os] = info;
+          agents[info.id+' '+info.os].num = 1;
+        }   
+        l = 0; 
+        if("events" in item){
+          for(b in item['events']){
+            ev = item['events'][b];
+            ev_arr = ev.split(' ');
+            cl = parseFloat(b.substr(3));
+            if(l<cl){
+              l = cl;
+            }
+            if(ev_arr[0]==='cl'){
+              time[timeid].clicks++;
+            }        
+          }
+         session_time.push(l);
+        }    
       }
-     session_time.push(l);
-    }    
-  }
 
   var totaltime = 0;
   var averagetime = 0;

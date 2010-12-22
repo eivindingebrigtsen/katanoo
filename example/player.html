@@ -7,14 +7,20 @@
         font-family: arial;
         background: #EEE;
       }
+      input{
+        font-size: 16px;
+        width: 710px;
+        padding: 5px;
+        margin-bottom: 10px;
+      }
 		  #wrapper{
-		    width: 800px;
+		    width: 720px;
 		    margin: 0 auto;
 		    background: white;
 		    padding: 20px;
 		  }
 		  #os, #browsers, #langs{
-		    width: 350px;
+		    width: 340px;
 		    height: 220px;
 		    float: left;
 		    margin-right: 20px;
@@ -37,6 +43,7 @@
 	<body>
 	  <div id="wrapper">
     <h1>Statistics</h1>
+    <input type="text" name="uri" value="katanoo.com/" id="uri" />
     <div id="timeline"></div>
     <div id="os"></div>
     <div id="browsers"></div>
@@ -47,6 +54,16 @@
 <script src="../lib/jquery.js" type="text/javascript" charset="utf-8"></script>
     <script src="../lib/highcharts.src.js" type="text/javascript" charset="utf-8"></script>
     <script src="../js/visualize.js" type="text/javascript" charset="utf-8"></script>
-    <script src="http://server1.katanoo.com:8000/get?uri=katanoo.com/&presentation=events&callback=visualize" type="text/javascript" charset="utf-8"></script>    
+    <script src="http://server1.katanoo.com:8000/get?uri=katanoo.com/&presentation=events&callback=visualize" type="text/javascript" charset="utf-8"></script>   
+    <script type="text/javascript" charset="utf-8">
+      $(function(){
+        $('#uri').keyup(function(e){
+          var code = e.keyCode || e.which;
+          if(code === 13){
+            $('<script src="http://server1.katanoo.com:8000/get?uri='+ $(this).val() +'&presentation=events&callback=visualize" type="text/javascript" charset="utf-8" />').appendTo('body');
+          }          
+        });
+      });
+    </script> 
 	</body>
 </html>
