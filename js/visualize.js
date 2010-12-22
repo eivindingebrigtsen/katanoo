@@ -25,7 +25,6 @@ window.visualize = function(data){
       months = ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des'];
       
       $('h1').text('Statistics '+data.URI);
-console.time('Datamining');
   d = new Date();
   for (a in data){
     item = data[a];
@@ -113,8 +112,6 @@ console.time('Datamining');
     i++;
   }while(i<=days);
 
-  console.log(days, daylabels)
-
   var timechart = new Highcharts.Chart({
       chart: {
          renderTo: 'timeline',
@@ -180,6 +177,7 @@ console.time('Datamining');
       }},
      series: agentseries
    });
+
 };
 
 
