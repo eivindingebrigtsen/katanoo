@@ -5,6 +5,7 @@ window.visualize = function(data){
       os      = {},
       time    = {},
       info    = {}, 
+      lang,
       item, 
       t, 
       d, 
@@ -22,6 +23,9 @@ window.visualize = function(data){
       high = 0,             // Low times
       days,
       day = 86400000,
+      l = 0,
+      c_l,
+      session_time = [],
       months = ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des'];
       
       $('h1').text('Statistics '+data.URI);
@@ -52,11 +56,11 @@ window.visualize = function(data){
         clicks: 0        
       };
     }
-    
-    if(item.language in langs){
-      langs[item.language]++;
+    lang = (item.language ? item.language.toLowerCase(): undefined);
+    if(lang in langs){
+      langs[lang]++;
     }else{
-      langs[item.language] = 1;
+      langs[lang] = 1;
     }
     if(item.screen in windows){
       windows[item.screen]++;
@@ -75,19 +79,30 @@ window.visualize = function(data){
     }else{
       agents[info.id+' '+info.os] = info;
       agents[info.id+' '+info.os].num = 1;
-    }    
+    }   
+    l = 0; 
     if("events" in item){
       for(b in item['events']){
         ev = item['events'][b];
         ev_arr = ev.split(' ');
+        cl = parseFloat(b.substr(3));
+        if(l<cl){
+          l = cl;
+        }
         if(ev_arr[0]==='mu'){
           time[timeid].clicks++;
-        }
-        
+        }        
       }
-    }
+     session_time.push(l);
+    }    
   }
 
+  var totaltime = 0;
+  var averagetime = 0;
+  for(var t in session_time){
+    totaltime += session_time[t];    
+  }
+  averagetime = totaltime/session_time.length;
   // Getting the amount of days in data
   days = Math.round((high-low)/day);
   
@@ -116,13 +131,13 @@ window.visualize = function(data){
       chart: {
          renderTo: 'timeline',
          defaultSeriesType: 'spline',
-         margin: [0,0,50,0]
+         margin: [0,0,50,30]
       },
       credits: {enabled: false},
       legend: {enabled: false},
       title: {text: 'Visits / Clicks'},
       xAxis: {categories: daylabels, labels:{enabled: false}},
-      yAxis: {min: 0},
+      yAxis: {min: 0, labels: {formatter: function(){return this.value;}}},
       tooltip:{shared: true, 
         formatter: function(){
           var str = '';
@@ -144,13 +159,13 @@ window.visualize = function(data){
       chart: {
          renderTo: 'os',
          defaultSeriesType: 'column',
-         margin: [0,0,20,0]
+         margin: [10,0,20,30]
       },
       credits: {enabled: false},
       legend: {enabled: false},
       title: {text: 'Operating Systems'},
       xAxis: {labels: {enabled: false}},
-      yAxis: {min: 0},
+      yAxis: {min: 0, labels: {formatter: function(){return this.value;}}},
       tooltip:{formatter: function(){
           return this.series.name + ': '+this.y;
       }},
@@ -165,17 +180,38 @@ window.visualize = function(data){
       chart: {
          renderTo: 'browsers',
          defaultSeriesType: 'column',
-         margin: [0,0,20,0]
+         margin: [10,0,20,30]
       },
       credits: {enabled: false},
       legend: {enabled: false},
       title: {text: 'Browsers'},
       xAxis: {labels: {enabled: false}},
-      yAxis: {min: 0},
+      yAxis: {min: 0, labels: {formatter: function(){return this.value;}}},
       tooltip:{formatter: function(){
           return this.series.name + ': '+this.y;
       }},
      series: agentseries
+   });
+
+   var langseries = [];
+   for (var e in langs){
+     langseries.push({name: e, data: [langs[e]]});
+   }
+   var agentchart = new Highcharts.Chart({
+      chart: {
+         renderTo: 'langs',
+         defaultSeriesType: 'column',
+         margin: [10,0,20,30]
+      },
+      credits: {enabled: false},
+      legend: {enabled: false},
+      title: {text: 'Languages'},
+      xAxis: {labels: {enabled: false}},
+      yAxis: {min: 0, labels: {formatter: function(){return this.value;}}},
+      tooltip:{formatter: function(){
+          return this.series.name + ': '+this.y;
+      }},
+     series: langseries
    });
 
 };
