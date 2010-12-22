@@ -42,7 +42,7 @@
 	</head>
 	<body>
 	  <div id="wrapper">
-    <h1>Statistics</h1>
+    <h1>Getting data from katanoo.com</h1>
     <input type="text" name="uri" value="katanoo.com/" id="uri" />
     <div id="timeline"></div>
     <div id="os"></div>
@@ -61,6 +61,7 @@
         $('#uri').keyup(function(e){
           var code = e.keyCode || e.which;
           if(code === 13){
+						$('h1').text('Getting data from katanoo.com');
             $('<script src="http://server1.katanoo.com:8000/get?uri='+ $(this).val() +'&presentation=events&callback=visualize" type="text/javascript" charset="utf-8" />').appendTo('body');
           }          
         });

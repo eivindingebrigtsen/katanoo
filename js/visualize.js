@@ -40,7 +40,7 @@ window.visualize = function(data){
       session_time = [],
       months = ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des'];
       
-      $('h1').text('Statistics '+data.URI);
+      $('h1').text('Calculating data');
       d = new Date();
 
       for (a in data){
@@ -295,7 +295,8 @@ window.visualize = function(data){
    //       ]
    //    });
    
-   
+     $('h1').text('Statistics '+data.URI);
+
 };
 
 
