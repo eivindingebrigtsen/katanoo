@@ -12,7 +12,7 @@ window.visualize = function(data){
         1900: 0,
         2400: 0,
         3600: 0
-      },
+      },      
       os      = {},
       time    = {},
       info    = {}, 

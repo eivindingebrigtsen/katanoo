@@ -9,7 +9,7 @@ var self = this,
 		time = new Date().getTime();
 		doc.__ = self;
 
-		self.postURL = "http://server1.katanoo.com:8000/put";
+		self.postURL = "http://server1.katanoo.com:8000/katanoo/put";
 		self.interval = 5000;
 		self.uniqueid = time;
 		self.uri = loc.host+loc.pathname;
